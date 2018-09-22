@@ -1,0 +1,46 @@
+<div class="row">
+  <div class="col-lg-12">
+    <h1>顧客詳細</h1>
+    <dl>
+      <dt>お名前</dt>
+      <dd class="mb-2 ml-4"><%= @customer.full_name %></dd>
+      <dt>電子メール</dt>
+      <dd class="mb-2 ml-4"><%= @customer.email %></dd>
+      <dt>会社名</dt>
+      <dd class="mb-2 ml-4"><%= @customer.company.name %></dd>
+      <dt>役職名</dt>
+      <dd class="mb-2 ml-4"><%= @customer.post.position_name %></dd>
+    </dl>
+    <%= link_to '編集', edit_customer_path(@customer), class: "btn btn-primary" %>
+    <%= link_to '戻る', customers_path, class: "btn btn-secondary" %>
+
+    <hr />
+
+    <h2>対応履歴</h2>
+    <% @comments.each do |comment| %>
+      <div class="media mb-3">
+        <div class="media-left">
+          <%= image_tag comment.user.image_url, class:"img-thumbnail", width:64 %>
+        </div>
+        <div class="media-body ml-2">
+          <div>投稿者：<%= comment.user.full_name %></div>
+          <%= simple_format(comment.body) %>
+          <div>
+            投稿日時：<%= comment.created_at.strftime('%Y-%m-%d %H:%M') %>
+            <%= link_to "削除する", comment_path(comment), method: :delete, class: "ml-2" %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <%= form_with model: @comment, url: { controller: :comments, action: :create }, local: true do |form| %>
+      <div class="form-group">
+        <%= form.label :body , '対応内容' %><br>
+        <%= form.text_area :body, class: "form-control" %>
+      </div>
+      <%= form.hidden_field :customer_id %>
+      <%= form.hidden_field :user_id, value: current_user.id %>
+      <%= form.submit class: "btn btn-primary" %>
+    <% end %>
+  </div>
+</div>
